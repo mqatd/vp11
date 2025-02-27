@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video.js Playlist</title>
+    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #181818;
+            color: #ffffff;
+        }
+
+        .video-js {
+            margin: 20px;
+        }
+
+        .vjs-default-skin {
+            color: #ffffff;
+            background-color: #000000;
+        }
+
+        .vjs-default-skin .vjs-big-play-button {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        #video-title {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        #playlist {
+            width: 640px;
+            margin-top: 20px;
+            background-color: #333;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .playlist-item {
+            padding: 10px;
+            cursor: pointer;
+            color: #ffffff;
+        }
+
+        .playlist-item:hover {
+            background-color: #555;
+        }
+
+        .playlist-item.active {
+            background-color: #777;
+        }
+    </style>
+</head>
+<body>
+    <video id="my-video" class="video-js vjs-default-skin" controls preload="auto" width="640" height="264">
+        <source src="video1.mp4" type="video/mp4">
+    </video>
+    
+    <div id="playlist"></div>
+
+    <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const player = videojs('my-video');
+            const playlistContainer = document.getElementById('playlist');
+
+            const playlist = [
+                { src: 'https://files.catbox.moe/2cl895.mp4', title: 'Officer On Duty - Official Trailer | Kunchako Boban | Priyamani | Jagadish | Jithu Ashraf' },
+                { src: 'https://files.catbox.moe/gaquhg.mp4', title: 'Aap Kaise Ho | Official Trailer | Dhyan Sreenivasan | Aju Varghese | Vinay Jose | Manuel Cruz Darwin' },
+                { src: 'https://files.catbox.moe/9m7gfp.mp4', title: 'Bromance | Official Trailer | Arjun Ashokan,Mahima,Mathew Thomas | ADJ |Govind Vasantha |Ashiq Usman' },
+                { src: 'https://files.catbox.moe/ju9ty8.mp4', title: 'Painkili - Official Trailer | Sajin Gopu | Anaswara Rajan | Sreejith Babu | Justin Varghese' },
+                { src: 'https://files.catbox.moe/zci6pg.mp4', title: 'Love Under Construction | Hotstar Specials | Official Trailer | February 28 | Disney+ Hotstar' }
+            ];
+
+            let currentVideoIndex = 0;
+
+            function loadPlaylist() {
+                playlist.forEach((video, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'playlist-item';
+                    item.textContent = video.title;
+                    item.addEventListener('click', () => {
+                        currentVideoIndex = index;
+                        player.src({ type: 'video/mp4', src: video.src });
+                        updateActiveItem();
+                        player.play();
+                    });
+                    playlistContainer.appendChild(item);
+                });
+                updateActiveItem();
+            }
+
+            function updateActiveItem() {
+                const items = document.querySelectorAll('.playlist-item');
+                items.forEach((item, index) => {
+                    item.classList.toggle('active', index === currentVideoIndex);
+                });
+            }
+
+            player.on('ended', function() {
+                currentVideoIndex++;
+                if (currentVideoIndex < playlist.length) {
+                    player.src({ type: 'video/mp4', src: playlist[currentVideoIndex].src });
+                    updateActiveItem();
+                    player.play();
+                }
+            });
+
+            player.on('loadstart', function() {
+                updateActiveItem();
+            });
+
+            loadPlaylist();
+        });
+    </script>
+</body>
+</html>
